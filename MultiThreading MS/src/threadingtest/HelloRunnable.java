@@ -5,6 +5,10 @@ public class HelloRunnable implements Runnable {
 
 	@Override
 	public void run() {
+		if (Thread.interrupted()) {
+			System.out.println("Interupted!!!");
+			// Thread.currentThread().interrupt();
+		}
 		// TODO Auto-generated method stub
 		System.out.println("Hello from a thread!");
 		Thread.currentThread().setName("SanishThread2");

@@ -63,19 +63,114 @@ public class ThreadTest {
 		Thread tH6 = new Thread(hRD1);
 		tH6.setDaemon(true);
 		tH6.start();
+//uncomment this to check working of deamon thread.
+//		while (true) {
+//			try {
+//				Thread.sleep(5000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//			System.out.println("Deamon thread running " + tH6.isAlive());
+//			System.out.println("Deamon thread is Daemon " + tH6.isDaemon());
+//
+//		}
 
-		while (true) {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			System.out.println("Deamon thread is Daemon " + tH6.isAlive());
-			System.out.println("Deamon thread running " + tH6.isDaemon());
-
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		tH6.interrupt();
+		System.out.println("Deamon thread is interupted? " + tH6.isInterrupted());
+		System.out.println("Deamon thread is Daemon " + tH6.isDaemon());
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		HelloRunnableJoin tRJ = new HelloRunnableJoin();
+		HelloRunnableJoinNext tRJN = new HelloRunnableJoinNext();
+
+		Thread tH7 = new Thread(tRJ);
+		Thread tH8 = new Thread(tRJN);
+
+		tH7.start();
+		try {
+			tH7.join();
+			Thread.sleep(2000);
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		tH8.start();
+
+		ThreadInterference iT1 = new ThreadInterference();
+		// ThreadInterference iT2 = new ThreadInterference();
+
+		Thread tH9 = new Thread(iT1);
+		Thread tH10 = new Thread(iT1);
+
+		try {
+			Thread.sleep(2000);
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		tH9.start();
+		tH10.start();
+
+		try {
+			Thread.sleep(2000);
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		SynchronizedCounter sC1 = new SynchronizedCounter();
+
+		tH9 = new Thread(sC1);
+		tH10 = new Thread(sC1);
+		tH9.start();
+		tH10.start();
 
 	}
 
