@@ -9,8 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+	private final PostRepository postRepository;
+
+	public PostController(PostRepository postRepository) {
+		// TODO Auto-generated constructor stub
+		this.postRepository = postRepository;
+	}
+
 	@GetMapping("")
 	List<Post> findAll() {
-		return null;
+		// return null;
+		return postRepository.findAll();
 	}
 }
