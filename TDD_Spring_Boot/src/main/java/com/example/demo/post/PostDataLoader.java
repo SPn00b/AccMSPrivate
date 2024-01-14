@@ -24,6 +24,7 @@ public class PostDataLoader implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
+		// Thread.currentThread().sleep(25000);
 		if (postRepository.count() == 0) {
 			String POSTS_JSON = "/data/posts.json";
 			log.info("Loading posts into database from JSON: {}", POSTS_JSON);
