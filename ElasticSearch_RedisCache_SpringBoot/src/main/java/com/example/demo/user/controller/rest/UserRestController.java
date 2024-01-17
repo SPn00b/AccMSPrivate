@@ -64,9 +64,9 @@ public class UserRestController {
 		return userService.create(user);
 	}
 
-	@PostMapping
+	@PostMapping("/{id}")
 	@CachePut
-	UserMySQL updateUser(@RequestBody UserMySQL user) {
+	UserMySQL updateUser(@PathVariable long id, @RequestBody UserMySQL user) {
 		try {
 			return userService.update(user);
 		} catch (UserNotFoundException e) {
