@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.user.model.User;
+import com.example.demo.user.model.UserElasticSearch;
+import com.example.demo.user.model.UserMySQL;
 import com.example.demo.user.service.UserService;
 
 @RestController
@@ -31,7 +32,7 @@ public class UserRestController {
 
 	@Cacheable
 	@GetMapping("/{id}")
-	User findById(@PathVariable long id) {
+	UserElasticSearch findById(@PathVariable long id) {
 		try {
 			return userService.findById(id);
 		} catch (UserNotFoundException e) {
@@ -42,13 +43,13 @@ public class UserRestController {
 
 	@GetMapping
 	@Cacheable
-	List<User> getAllUsers() {
+	List<UserElasticSearch> getAllUsers() {
 		return userService.getAllUsers();
 	}
 
 	@CacheEvict
 	@DeleteMapping("/delete/{id}")
-	User deleUser(@PathVariable long id) {
+	UserMySQL deleUser(@PathVariable long id) {
 		try {
 			return userService.delete(id);
 		} catch (UserNotFoundException e) {
@@ -59,13 +60,13 @@ public class UserRestController {
 
 	@PostMapping
 	@CachePut
-	User createUser(@RequestBody User user) {
+	UserMySQL createUser(@RequestBody UserMySQL user) {
 		return userService.create(user);
 	}
 
 	@PostMapping
 	@CachePut
-	User updateUser(@RequestBody User user) {
+	UserMySQL updateUser(@RequestBody UserMySQL user) {
 		try {
 			return userService.update(user);
 		} catch (UserNotFoundException e) {

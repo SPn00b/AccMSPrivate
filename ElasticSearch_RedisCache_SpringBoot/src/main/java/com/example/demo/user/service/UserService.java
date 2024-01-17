@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.user.model.User;
+import com.example.demo.user.model.UserElasticSearch;
+import com.example.demo.user.model.UserMySQL;
 import com.example.demo.user.repo.UserElasticSearchRepository;
 import com.example.demo.user.repo.UserRepository;
 
@@ -27,19 +28,31 @@ public class UserService {
 	}
 
 	@Transactional
-	public User create(User user) {
+	public UserMySQL create(UserMySQL user) {
+		UserElasticSearch userElasticSearch = new UserElasticSearch();
+		userElasticSearch.setId(user.getId());
+		userElasticSearch.setFirstName(user.getFirstName());
+		userElasticSearch.setLastName(user.getLastName());
+		userElasticSearch.setModificationDate(user.getModificationDate());
 		userRepository.save(user);
-		userElasticSearchRepository.save(user, RefreshPolicy.IMMEDIATE);
+		userElasticSearchRepository.save(userElasticSearch,
+				RefreshPolicy.IMMEDIATE);
 		return user;
 	}
 
 	@Transactional
-	public User update(User user) throws UserNotFoundException {
-		Optional<User> optionalUser = userElasticSearchRepository
+	public UserMySQL update(UserMySQL user) throws UserNotFoundException {
+		Optional<UserElasticSearch> optionalUser = userElasticSearchRepository
 				.findById(user.getId());
 		if (optionalUser.isPresent()) {
-			User u = optionalUser.get();
-			userRepository.save(u);
+			UserElasticSearch u = optionalUser.get();
+			UserMySQL userMySQL = new UserMySQL();
+			userMySQL.setId(optionalUser.get().getId());
+			userMySQL.setFirstName(optionalUser.get().getFirstName());
+			userMySQL.setLastName(optionalUser.get().getLastName());
+			userMySQL.setModificationDate(
+					optionalUser.get().getModificationDate());
+			userRepository.save(userMySQL);
 			userElasticSearchRepository.save(u, RefreshPolicy.IMMEDIATE);
 			return user;
 		}
@@ -48,13 +61,14 @@ public class UserService {
 	}
 
 	@Transactional
-	public List<User> getAllUsers() {
-		return (List<User>) userElasticSearchRepository.findAll();
+	public List<UserElasticSearch> getAllUsers() {
+		return (List<UserElasticSearch>) userElasticSearchRepository.findAll();
 	}
 
 	@Transactional
-	public User findById(long id) throws UserNotFoundException {
-		Optional<User> optionalUser = userElasticSearchRepository.findById(id);
+	public UserElasticSearch findById(long id) throws UserNotFoundException {
+		Optional<UserElasticSearch> optionalUser = userElasticSearchRepository
+				.findById(id);
 		if (optionalUser.isPresent()) {
 			return optionalUser.get();
 		}
@@ -62,13 +76,21 @@ public class UserService {
 	}
 
 	@Transactional
-	public User delete(long id) throws UserNotFoundException {
-		Optional<User> optionalUser = userElasticSearchRepository.findById(id);
+	public UserMySQL delete(long id) throws UserNotFoundException {
+		Optional<UserElasticSearch> optionalUser = userElasticSearchRepository
+				.findById(id);
 		if (optionalUser.isPresent()) {
-			User u = optionalUser.get();
-			userElasticSearchRepository.delete(u, RefreshPolicy.IMMEDIATE);
-			userRepository.delete(u);
-			return u;
+			UserElasticSearch u = optionalUser.get();
+			UserMySQL userMySQL = new UserMySQL();
+			userMySQL.setId(optionalUser.get().getId());
+			userMySQL.setFirstName(optionalUser.get().getFirstName());
+			userMySQL.setLastName(optionalUser.get().getLastName());
+			userMySQL.setModificationDate(
+					optionalUser.get().getModificationDate());
+			userElasticSearchRepository.deleteById(u.getId(),
+					RefreshPolicy.IMMEDIATE);
+			userRepository.deleteById(u.getId());
+			return userMySQL;
 		}
 		throw new UserNotFoundException(
 				"User not found with id for deletion" + id);

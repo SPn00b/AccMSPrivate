@@ -1,11 +1,11 @@
 package com.example.demo.user.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.example.demo.user.model.User;
+import com.example.demo.user.model.UserMySQL;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+@EnableJpaRepositories
+public interface UserRepository extends JpaRepository<UserMySQL, Long> {
 
 }
