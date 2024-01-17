@@ -1,0 +1,78 @@
+#services:
+#  elasticsearch:
+#    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.10'
+#    environment:
+#      - 'ELASTIC_PASSWORD=secret'
+#      - 'discovery.type=single-node'
+#      - 'xpack.security.enabled=false'
+#    ports:
+#      - '9200'
+#      - '9300'
+#  redis:
+#    image: 'redis:latest'
+#    ports:
+#      - '6379'
+      
+      
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 128M
+    container_name: mysql8
+    hostname: localhost
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/sanish/docker/dockerdatadir/mysqldatadir/datadir:/var/lib/mysql
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=elasticsearch
+      - MYSQL_ROOT_HOST=%
+      - DEFAULT_TIME_ZONE=Asia/Kolkata
+  application:
+    build: ./
+    container_name: application
+    restart: always
+    ports:
+      - "8080:8080"
+    links:
+      - localhost
+    environment:
+      - MYSQL_DATASOURCE=mysql:3306
+      - SPRING_DATASOURCE_PASSWORD=root
+      - CLUSTER_NAME=elastic
+      - CLUSTER_NODES=elastic:9300
+
+  # Service ElasticSearch
+  elasticsearch:
+    image: elastic/elasticsearch:7
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+    container_name: elastic
+    hostname: elastic
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - /home/sanish/docker/dockerdatadir/esdatadir/data:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=elastic
+      - network.host=0.0.0.0
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=elastic
+      - discovery.type=single-node
+volumes:
+  esdata:
+    driver: local
