@@ -4,3 +4,10 @@ spring:
     url: jdbc:mysql://localhost:3306/elasticsearch
     username: san
     password: password
+    
+  cache:
+    type: redis
+    host: redis7alpine_redis_1
+    port: 6379
+    #redis:
+      #time-to-live: 60000

@@ -30,7 +30,7 @@ public class UserRestController {
 		this.userService = userService;
 	}
 
-	@Cacheable
+	@Cacheable(value = "user", key = "#id")
 	@GetMapping("/{id}")
 	UserElasticSearch findById(@PathVariable long id) {
 		try {
@@ -42,12 +42,12 @@ public class UserRestController {
 	}
 
 	@GetMapping
-	@Cacheable
+	@Cacheable(cacheNames = "user")
 	List<UserElasticSearch> getAllUsers() {
 		return userService.getAllUsers();
 	}
 
-	@CacheEvict
+	@CacheEvict(cacheNames = "user", key = "#id", beforeInvocation = false)
 	@DeleteMapping("/delete/{id}")
 	UserMySQL deleUser(@PathVariable long id) {
 		try {
@@ -59,13 +59,13 @@ public class UserRestController {
 	}
 
 	@PostMapping
-	@CachePut
+	@CachePut(cacheNames = "user", key = "#user.getId")
 	UserMySQL createUser(@RequestBody UserMySQL user) {
 		return userService.create(user);
 	}
 
 	@PostMapping("/{id}")
-	@CachePut
+	@CachePut(cacheNames = "user", key = "#id")
 	UserMySQL updateUser(@PathVariable long id, @RequestBody UserMySQL user) {
 		try {
 			return userService.update(user);

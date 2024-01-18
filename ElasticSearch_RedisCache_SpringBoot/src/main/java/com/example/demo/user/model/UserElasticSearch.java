@@ -1,5 +1,6 @@
 package com.example.demo.user.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -10,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @Document(indexName = "user")
 @Setting(replicas = 2, shards = 3)
 // @RedisHash
-public class UserElasticSearch {
+public class UserElasticSearch implements Serializable {
 	@Field(type = FieldType.Long)
 	private Long id;
 
