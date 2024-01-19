@@ -7,7 +7,18 @@ spring:
     
   cache:
     type: redis
-    host: redis7alpine_redis_1
-    port: 6379
-    #redis:
+    #host: redis7alpine_redis_1
+    #port: 6379
+    redis:
       #time-to-live: 60000
+      enable-statistics: true
+      
+  data:
+    redis:
+      client-name: redis7alpine_redis_1
+      password: password
+      #client-type:
+      
+  jpa:
+    hibernate:
+      ddl-auto: update

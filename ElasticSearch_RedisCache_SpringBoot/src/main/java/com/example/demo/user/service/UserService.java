@@ -2,6 +2,8 @@ package com.example.demo.user.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.RefreshPolicy;
@@ -28,41 +30,45 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserMySQL create(UserMySQL user) {
-		UserElasticSearch userElasticSearch = new UserElasticSearch();
-		userElasticSearch.setId(user.getId());
-		userElasticSearch.setFirstName(user.getFirstName());
-		userElasticSearch.setLastName(user.getLastName());
-		userElasticSearch.setModificationDate(user.getModificationDate());
-		userRepository.save(user);
-		userElasticSearchRepository.save(userElasticSearch,
+	public UserElasticSearch create(UserElasticSearch userElasticSearch) {
+		UserMySQL userMySQL = new UserMySQL();
+		userMySQL.setFirstName(userElasticSearch.getFirstName());
+		userMySQL.setLastName(userElasticSearch.getLastName());
+		UserMySQL userMySQLAdded = userRepository.save(userMySQL);
+		userElasticSearch.setId(userMySQLAdded.getId());
+		return userElasticSearchRepository.save(userElasticSearch,
 				RefreshPolicy.IMMEDIATE);
-		return user;
 	}
 
 	@Transactional
-	public UserMySQL update(UserMySQL user) throws UserNotFoundException {
+	public UserElasticSearch update(long id,
+			UserElasticSearch userElasticSearch) throws UserNotFoundException {
 		Optional<UserElasticSearch> optionalUser = userElasticSearchRepository
-				.findById(user.getId());
+				.findById(id);
 		if (optionalUser.isPresent()) {
 			UserElasticSearch u = optionalUser.get();
+			u.setId(id);
+			u.setFirstName(userElasticSearch.getFirstName());
+			u.setLastName(userElasticSearch.getLastName());
 			UserMySQL userMySQL = new UserMySQL();
-			userMySQL.setId(optionalUser.get().getId());
-			userMySQL.setFirstName(optionalUser.get().getFirstName());
-			userMySQL.setLastName(optionalUser.get().getLastName());
-			userMySQL.setModificationDate(
-					optionalUser.get().getModificationDate());
+			userMySQL.setId(id);
+			userMySQL.setFirstName(u.getFirstName());
+			userMySQL.setLastName(u.getLastName());
 			userRepository.save(userMySQL);
-			userElasticSearchRepository.save(u, RefreshPolicy.IMMEDIATE);
-			return user;
+			return userElasticSearchRepository.save(u, RefreshPolicy.IMMEDIATE);
 		}
 		throw new UserNotFoundException(
-				"User not found with id " + user.getId());
+				"User not found with id " + userElasticSearch.getId());
 	}
 
 	@Transactional
 	public List<UserElasticSearch> getAllUsers() {
-		return (List<UserElasticSearch>) userElasticSearchRepository.findAll();
+		Iterable<UserElasticSearch> iterableElasticSearch = userElasticSearchRepository
+				.findAll();
+
+		// List<UserElasticSearch> listUserElasticSearch =
+		return StreamSupport.stream(iterableElasticSearch.spliterator(), false)
+				.collect(Collectors.toList());
 	}
 
 	@Transactional
@@ -76,21 +82,14 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserMySQL delete(long id) throws UserNotFoundException {
+	public UserElasticSearch delete(long id) throws UserNotFoundException {
 		Optional<UserElasticSearch> optionalUser = userElasticSearchRepository
 				.findById(id);
 		if (optionalUser.isPresent()) {
 			UserElasticSearch u = optionalUser.get();
-			UserMySQL userMySQL = new UserMySQL();
-			userMySQL.setId(optionalUser.get().getId());
-			userMySQL.setFirstName(optionalUser.get().getFirstName());
-			userMySQL.setLastName(optionalUser.get().getLastName());
-			userMySQL.setModificationDate(
-					optionalUser.get().getModificationDate());
-			userElasticSearchRepository.deleteById(u.getId(),
-					RefreshPolicy.IMMEDIATE);
-			userRepository.deleteById(u.getId());
-			return userMySQL;
+			userElasticSearchRepository.deleteById(id, RefreshPolicy.IMMEDIATE);
+			userRepository.deleteById(id);
+			return u;
 		}
 		throw new UserNotFoundException(
 				"User not found with id for deletion" + id);

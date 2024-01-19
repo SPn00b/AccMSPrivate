@@ -1,28 +1,41 @@
 package com.example.demo.user.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 @Document(indexName = "user")
 @Setting(replicas = 2, shards = 3)
 // @RedisHash
 public class UserElasticSearch implements Serializable {
+	private static final long serialVersionUID = 2725532028955182268L;
+
 	@Field(type = FieldType.Long)
 	private Long id;
 
+	@NotNull
+	@NotBlank
+	@NotEmpty
 	@Field(type = FieldType.Text)
 	private String firstName;
 
+	@NotNull
+	@NotBlank
+	@NotEmpty
 	@Field(type = FieldType.Text)
 	private String lastName;
 
-	@Field(type = FieldType.Date)
-	private Date modificationDate;
+	// @Field(type = FieldType.Date_Nanos)
+	// @Temporal(TemporalType.TIMESTAMP)
+	// @UpdateTimestamp
+	// private Timestamp modificationDate;
 
 	public UserElasticSearch() {
 		// do nothing
@@ -52,11 +65,11 @@ public class UserElasticSearch implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public Date getModificationDate() {
-		return modificationDate;
-	}
-
-	public void setModificationDate(Date modificationDate) {
-		this.modificationDate = modificationDate;
-	}
+	// public Timestamp getModificationDate() {
+	// return modificationDate;
+	// }
+	//
+	// public void setModificationDate(Timestamp modificationDate) {
+	// this.modificationDate = modificationDate;
+	// }
 }
